@@ -10,12 +10,32 @@ soup = BeautifulSoup(html_content, 'html.parser')
 # Find the first painting
 first_painting = soup.find(class_='klitem')
 
-# Print the name of the painting
 if first_painting:
+    # Get the name of the painting
     name_element = first_painting.find(class_='kltat')
     if name_element:
-        print("Name of the first painting:", name_element.text.strip())
+        name = name_element.text.strip()
+        print("Name of the first painting:", name)
     else:
-        print("Could not find the name element for the first painting.")
+        print("Missing painting name")
+    
+    # Get the date 
+    date_element = first_painting.find(class_='klmeta')
+    if date_element:
+        date = date_element.text.strip()
+        extensions = [date]  # Put the date in an array
+        print("Extensions (date):", extensions)
+    else:
+        print("Missing painting date")
+    
+    # Extract the Google link
+    link_element = first_painting.find('a')
+    if link_element:
+        link = link_element.get('href')
+        if link.startswith('/'):
+            link = 'https://www.google.com' + link
+        print("Google link:", link)
+    else:
+        print("Missing painting link")
 else:
-    print("Could not find any paintings.")
+    print("Could not find painting")
