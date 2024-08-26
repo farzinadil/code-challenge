@@ -1,6 +1,8 @@
+import json
+import re
 from bs4 import BeautifulSoup
 
-# Read HTML file
+# Open the HTML file
 with open('files/van-gogh-paintings.html', 'r', encoding='utf-8') as file:
     html_content = file.read()
 
@@ -13,29 +15,40 @@ first_painting = soup.find(class_='klitem')
 if first_painting:
     # Get the name of the painting
     name_element = first_painting.find(class_='kltat')
-    if name_element:
-        name = name_element.text.strip()
-        print("Name of the first painting:", name)
-    else:
-        print("Missing painting name")
+    name = name_element.text.strip() if name_element else "Name not found"
     
-    # Get the date 
+    # Get the date (extensions)
     date_element = first_painting.find(class_='klmeta')
-    if date_element:
-        date = date_element.text.strip()
-        extensions = [date]  # Put the date in an array
-        print("Extensions (date):", extensions)
-    else:
-        print("Missing painting date")
+    extensions = [date_element.text.strip()] if date_element else []
     
-    # Extract the Google link
-    link_element = first_painting.find('a')
-    if link_element:
-        link = link_element.get('href')
-        if link.startswith('/'):
-            link = 'https://www.google.com' + link
-        print("Google link:", link)
-    else:
-        print("Missing painting link")
+    # Get the Google link  
+    link = 'https://www.google.com' + first_painting.get('href', '') if first_painting.has_attr('href') else None
+    
+    # Get the thumbnail image URL
+    img_element = first_painting.find('img')
+    image = None
+    if img_element:
+        img_id = img_element.get('id')
+        if img_id:
+            # Find the script that sets the src for this image
+            script = soup.find('script', text=re.compile(img_id))
+            if script:
+                # Get the image data from the script
+                match = re.search(r"var s='(data:image/jpeg;base64,[^']+)'", script.string)
+                if match:
+                    # Remove double backslashes from the image data
+                    image = match.group(1).replace('\\', '')
+
+    # Create a dictionary for the painting
+    painting_info = {
+        "name": name,
+        "extensions": extensions,
+        "link": link,
+        "image": image
+    }
+
+    # Print the result as JSON
+    print(json.dumps([painting_info], indent=2))
+
 else:
-    print("Could not find painting")
+    print("Could not find any paintings.")
