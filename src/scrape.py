@@ -1,13 +1,19 @@
 import os
 import json
 from bs4 import BeautifulSoup
+import configparser
+
 from image_extractor import extract_content
 
 
 # Read the HTML file
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
-html_file = os.path.join(parent_dir, 'files', 'van-gogh-paintings.html')
+config = configparser.ConfigParser()
+config.read(os.path.join(parent_dir, 'files', 'config.ini'))
+file_name = config['DEFAULT']['file']
+html_file = os.path.join(parent_dir, 'files', file_name)
+
 with open(html_file, 'r', encoding='utf-8') as file:
     html_content = file.read()
 
@@ -15,19 +21,35 @@ with open(html_file, 'r', encoding='utf-8') as file:
 soup = BeautifulSoup(html_content, 'html.parser')
 
 # Find all carousel items
-carousel_items = soup.find_all(class_='klitem')
+carousel_items = soup.find_all(class_='klitem-tr')
 
 # List to store all carousel item information
 all_carousel_items = []
 
 for carousel_item in carousel_items:
+    if carousel_item.name == 'div':
+        '''
+            It is probably better to use regex; treat the entire klitem-tr 
+            as a string, and look for aria-label, title, href, etc.
+        '''
+        carousel_item = carousel_item.find('a', attrs={'aria-label': True})
     # Extract the name of the carousel item
-    name_element = carousel_item.find(class_='kltat')
-    name = name_element.text.strip() if name_element else "Name not found"
+    label = carousel_item.get('aria-label', None)
+    name = label if label else None
+
     
     # Extract the date (extensions)
-    date_element = carousel_item.find(class_='klmeta')
-    extensions = date_element.text.strip() if date_element else ""
+    title = carousel_item.get('title', None)
+    if title != name:
+        title_and_extension = title.replace('(', '').replace(')', '')
+        title_name, extension = title_and_extension.rsplit(' ', 1)
+        extensions = extension
+    else:
+        extensions = None
+
+
+    #date_element = carousel_item.find(class_='klmeta')
+    #extensions = date_element.text.strip() if date_element else ""
     
     # Extract the Google link  
     link = 'https://www.google.com' + carousel_item.get('href', '') if carousel_item.has_attr('href') else None

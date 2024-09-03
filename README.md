@@ -1,28 +1,96 @@
 # Extract Van Gogh Paintings Code Challenge
 
-Goal is to extract a list of Van Gogh paintings from the attached Google search results page.
+## Prerequisites
 
-![Van Gogh paintings](https://github.com/serpapi/code-challenge/blob/master/files/van-gogh-paintings.png?raw=true "Van Gogh paintings")
+- Python 3.7+
+- Make
 
-## Instructions
+### Checking Prerequisites
 
-This is already fully supported on SerpApi. ([relevant test], [html file], [sample json], and [expected array].)
-Try to come up with your own solution and your own test.
-Extract the painting `name`, `extensions` array (date), and Google `link` in an array.
+1. Check Python version:
+<code>python3 --version</code>
+This should return a version number 3.7 or higher.
+2. Check if Make is installed:
+<code>make --version</code>
+This should display the version of Make installed on your system.
 
-Fork this repository and make a PR when ready.
+### Installing Prerequisites
 
-Programming language wise, Ruby (with RSpec tests) is strongly suggested but feel free to use whatever you feel like.
+- Python: If not installed, download and install from [python.org](https://www.python.org/downloads/)
+- Make: If not installed: 
+- On Ubuntu/Debian: <code>sudo apt-get install make</code>
+- On macOS: Install Xcode Command Line Tools by running <code>xcode-select --install</code>
 
-Parse directly the HTML result page ([html file]) in this repository. No extra HTTP requests should be needed for anything.
+## Installation
 
-[relevant test]: https://github.com/serpapi/test-knowledge-graph-desktop/blob/master/spec/knowledge_graph_claude_monet_paintings_spec.rb
-[sample json]: https://raw.githubusercontent.com/serpapi/code-challenge/master/files/van-gogh-paintings.json
-[html file]: https://raw.githubusercontent.com/serpapi/code-challenge/master/files/van-gogh-paintings.html
-[expected array]: https://raw.githubusercontent.com/serpapi/code-challenge/master/files/expected-array.json
+To set up the project, run:
+<code>make install</code>
 
-Add also to your array the painting thumbnails present in the result page file (not the ones where extra requests are needed). 
+This command creates a virtual environment and installs all necessary dependencies.
 
-Test against 2 other similar result pages to make sure it works against different layouts. (Pages that contain the same kind of carrousel. Don't necessarily have to be paintings.)
+## Usage
 
-The suggested time for this challenge is 4 hours. But, you can take your time and work more on it if you want.
+### Running the Script
+
+To generate the search array:
+<code>make run</code>
+
+This command will:
+1. Parse van-gogh-paintings.html
+2. Process the data
+3. Generate a JSON array named `generated_array.json` in the files directory
+
+### Running Tests
+
+To run the test suite:
+
+<code>make test</code>
+
+This command runs all tests in the `tests` directory.
+
+### Cleaning Up
+
+To remove generated files, cached Python files, and the virtual environment:
+
+<code>make clean</code>
+
+## Running Without Make
+
+If you prefer not to use Make, or if it's not available on your system, you can run the project directly using Python commands. Here's how:
+
+1. Create a virtual environment:
+
+<code>python3 -m venv venv</code>
+
+2. Activate the virtual environment:
+
+<code>source venv/bin/activate</code>
+
+3. Install dependencies:
+
+<code>pip install -r requirements.txt</code>
+
+### Running the Script
+
+4. Run the main script:
+
+<code>python3 src/scrape.py</code>
+
+### Running Tests
+
+To run the test suite:
+
+<code>python3 -m unittest discover tests</code>
+
+
+## Project Structure
+
+- `src/`: Main script for parsing html and generating json output
+- `files/`: Supporting files including html and generated files
+- `tests/`: Directory containing test files
+- `Makefile`: Contains commands for installing dependencies, running the script, running tests, and cleaning up
+- `.env`: (Not in repository) Contains API URL and API key
+
+## Other HTML files
+
+To use other HTML files, change file to 49ers-players.html or warriors.html in file/config.ini
